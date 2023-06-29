@@ -2,23 +2,31 @@ import {
   Paper,
   TableContainer,
   Table,
-  TableHead,
-  TableRow,
+  TableRow as MTableRow,
   TableCell,
   TableBody,
   TableFooter,
-  TablePagination,
-  FormControl,
-  Select,
-  MenuItem,
 } from '@mui/material';
 import { ICar } from '@/types/ICar';
 import { useState } from 'react';
-import TablePaginationActions from './TablePaginationActions';
+import TableRow from './TableRow';
+import TablePagination from './TablePagination';
+import TableHead from './TableHead';
 
 type Props = {
   cars: ICar[];
 };
+
+const headers = [
+  'Company',
+  'Model',
+  'VIN-Code',
+  'Color',
+  'Year',
+  'Price',
+  'Availability',
+  "Action's",
+];
 
 const AppTable = ({ cars }: Props) => {
   const [page, setPage] = useState(0);
@@ -44,84 +52,33 @@ const AppTable = ({ cars }: Props) => {
   return (
     <TableContainer component={Paper}>
       <Table stickyHeader sx={{ minWidth: 650 }} aria-label="custom pagination table">
-        <TableHead>
-          <TableRow>
-            <TableCell align="left">Company</TableCell>
-            <TableCell align="center">Model</TableCell>
-            <TableCell align="center">VIN</TableCell>
-            <TableCell align="center">Color</TableCell>
-            <TableCell align="center">Year</TableCell>
-            <TableCell align="center">Price</TableCell>
-            <TableCell align="center">Availability</TableCell>
-            <TableCell align="center">Actions</TableCell>
-          </TableRow>
-        </TableHead>
+        <TableHead headers={headers} />
         <TableBody>
-          {cars.length === 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={8} sx={{ textAlign: 'center' }}>
+          {cars.length === 0 ? (
+            <MTableRow>
+              <TableCell colSpan={headers.length} sx={{ textAlign: 'center' }}>
                 Cars not found
               </TableCell>
-            </TableRow>
-          )}
-          {(rowsPerPage > 0
-            ? cars.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : cars
-          ).map(car => (
-            <TableRow key={car.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TableCell align="left">{car.company}</TableCell>
-              <TableCell align="center">{car.model}</TableCell>
-              <TableCell align="center">{car.vin}</TableCell>
-              <TableCell align="center">{car.color}</TableCell>
-              <TableCell align="center">{car.year}</TableCell>
-              <TableCell align="center">{car.price}</TableCell>
-              <TableCell align="center">{car.availability ? 'yes' : 'no'}</TableCell>
-              <TableCell align="center" style={{ width: '10px' }}>
-                <FormControl sx={{ minWidth: 120, fontSize: '10px' }} size="small">
-                  <Select
-                    value="none"
-                    onChange={evt => {
-                      console.log(evt.target.value);
-                    }}
-                    displayEmpty
-                    inputProps={{ 'aria-label': 'Without label' }}
-                  >
-                    <MenuItem value="none" disabled>
-                      Choose action
-                    </MenuItem>
-                    <MenuItem value="edit">Edit</MenuItem>
-                    <MenuItem value="delete">Delete</MenuItem>
-                  </Select>
-                </FormControl>
-              </TableCell>
-            </TableRow>
-          ))}
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={8} />
-            </TableRow>
+            </MTableRow>
+          ) : (
+            (rowsPerPage > 0
+              ? cars.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              : cars
+            ).map(car => <TableRow key={car.id} value={car} />)
           )}
         </TableBody>
-        <TableFooter>
-          <TableRow>
+        {cars.length > 0 && cars.length > rowsPerPage && (
+          <TableFooter>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={8}
+              colSpan={headers.length}
               count={cars.length}
               rowsPerPage={rowsPerPage}
               page={page}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                native: true,
-              }}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
             />
-          </TableRow>
-        </TableFooter>
+          </TableFooter>
+        )}
       </Table>
     </TableContainer>
   );
