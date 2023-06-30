@@ -4,6 +4,7 @@ import { getCarsService } from './services/api';
 import { ICar } from './types/ICar';
 import AppTable from './components/Table';
 import Search from './components/Search';
+import AddCarButton from './components/AddCardButton';
 
 function filterIt(arr: ICar[], searchKey: string) {
   return arr.filter(({ id: _, ...carOther }) => {
@@ -30,9 +31,10 @@ function App() {
   }, []);
 
   return (
-    <Container sx={{ py: 2 }}>
+    <Container sx={{ position: 'relative', py: 2 }}>
       <Search onChange={setSearch} />
       <AppTable cars={filterIt(cars, search)} />
+      <AddCarButton />
     </Container>
   );
 }
