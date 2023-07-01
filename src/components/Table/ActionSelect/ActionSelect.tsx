@@ -20,6 +20,7 @@ const ActionSelect = ({ item }: Props) => {
   return (
     <>
       <Select<ActionType>
+        name="select"
         value="none"
         onChange={evt => {
           const value = evt.target.value as ActionType;
@@ -45,7 +46,7 @@ const ActionSelect = ({ item }: Props) => {
       {action !== 'none' && (
         <Modal onClose={modalClose}>
           {action === 'delete' ? (
-            <DeleteDialog id={1} onClose={modalClose} />
+            <DeleteDialog id={item.id} onClose={modalClose} />
           ) : (
             <FormDialog type="edit" item={item} onClose={modalClose} />
           )}

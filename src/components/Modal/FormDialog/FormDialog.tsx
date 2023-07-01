@@ -1,16 +1,37 @@
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { ICar } from '@/types/ICar';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import FormInput from './FormInput';
+import FormSwitch from './FormSwitch/FormSwitch';
 
+type FormValuesType = Omit<ICar, 'id'>;
 type Props = {
   type: 'edit' | 'create';
-  item?: ICar;
-  onSuccess?: () => void;
+  item?: FormValuesType;
+  onSuccess?: (car: FormValuesType) => void;
   onClose: () => void;
 };
 
-const FormDialog = ({ type, item, onClose }: Props) => {
-  const submitHandler = (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
+const initialValues: FormValuesType = {
+  company: '',
+  model: '',
+  vin: '',
+  color: '',
+  price: '',
+  year: new Date().getFullYear(),
+  availability: true,
+};
+
+const FormDialog = ({ type, item, onClose, onSuccess }: Props) => {
+  const { control, handleSubmit } = useForm<FormValuesType>({
+    defaultValues: item || initialValues,
+  });
+
+  const isEdit = type === 'edit';
+
+  const submitHandler: SubmitHandler<FormValuesType> = data => {
+    console.log(data);
+    if (onSuccess) onSuccess(data);
   };
 
   return (
@@ -21,61 +42,50 @@ const FormDialog = ({ type, item, onClose }: Props) => {
       display="flex"
       flexDirection="column"
       gap={2}
-      onSubmit={submitHandler}
+      onSubmit={handleSubmit(submitHandler)}
     >
-      <TextField
-        label="Company"
-        variant="outlined"
-        defaultValue={item?.company}
-        fullWidth
-        size="small"
-        disabled={type === 'edit'}
-      />
-      <TextField
-        label="Model"
-        variant="outlined"
-        defaultValue={item?.model}
-        fullWidth
-        size="small"
-        disabled={type === 'edit'}
-      />
-      <TextField
-        label="VIN-code"
-        variant="outlined"
-        defaultValue={item?.vin}
-        fullWidth
-        size="small"
-        disabled={type === 'edit'}
-      />
-      <TextField
-        label="Year"
-        variant="outlined"
-        defaultValue={item?.year}
-        fullWidth
-        size="small"
-        disabled={type === 'edit'}
+      <Controller
+        name="company"
+        control={control}
+        render={({ field }) => <FormInput label="Company" disabled={isEdit} {...field} />}
       />
 
-      <TextField
-        label="Color"
-        variant="outlined"
-        defaultValue={item?.color}
-        fullWidth
-        size="small"
+      <Controller
+        name="model"
+        control={control}
+        render={({ field }) => <FormInput label="Model" disabled={isEdit} {...field} />}
       />
-      <TextField
-        label="Price"
-        variant="outlined"
-        defaultValue={item?.price}
-        fullWidth
-        size="small"
+
+      <Controller
+        name="vin"
+        control={control}
+        render={({ field }) => <FormInput label="VIN-code" disabled={isEdit} {...field} />}
       />
-      <TextField
-        label="Availability"
-        variant="outlined"
-        defaultValue={item?.availability}
-        fullWidth
-        size="small"
+
+      <Controller
+        name="year"
+        control={control}
+        render={({ field }) => (
+          <FormInput type="number" label="Year" disabled={isEdit} {...field} />
+        )}
+      />
+
+      <Controller
+        name="color"
+        control={control}
+        render={({ field }) => <FormInput label="Color" {...field} />}
+      />
+
+      <Controller
+        name="price"
+        control={control}
+        render={({ field }) => <FormInput label="Price" {...field} />}
+      />
+
+      <Controller
+        name="availability"
+        control={control}
+        render={({ field }) => <FormSwitch label="Availability" {...field} />}
       />
 
       <Box mx="auto" mt={1} display="flex" justifyContent="center" gap={4}>

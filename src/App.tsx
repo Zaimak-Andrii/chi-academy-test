@@ -1,10 +1,12 @@
 import { Container } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { getCarsService } from './services/api';
-import { ICar } from './types/ICar';
-import AppTable from './components/Table';
-import Search from './components/Search';
-import AddCarButton from './components/AddCardButton';
+import { useAppDispatch, useAppSelector } from '@/hooks';
+import { selectCars } from '@/redux/cars/cars.selectors';
+import { fetchCarsThunk } from '@/redux/cars/cars.thunk';
+import { ICar } from '@/types/ICar';
+import AppTable from '@/components/Table';
+import Search from '@/components/Search';
+import AddCarButton from '@/components/AddCardButton';
 
 function filterIt(arr: ICar[], searchKey: string) {
   return arr.filter(({ id: _, ...carOther }) => {
@@ -17,18 +19,13 @@ function filterIt(arr: ICar[], searchKey: string) {
 }
 
 function App() {
-  const [cars, setCars] = useState<ICar[]>([]);
+  const cars = useAppSelector(selectCars);
+  const dispatch = useAppDispatch();
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    const run = async () => {
-      const data = await getCarsService();
-
-      setCars(data);
-    };
-
-    run();
-  }, []);
+    dispatch(fetchCarsThunk());
+  }, [dispatch]);
 
   return (
     <Container sx={{ position: 'relative', py: 2 }}>
