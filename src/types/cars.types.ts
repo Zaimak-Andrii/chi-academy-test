@@ -19,8 +19,8 @@ export interface ICar {
   price: string;
   availability: boolean;
 }
-
-export type ICarForm = Omit<ICar, 'id'>;
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+export type ICarForm = Omit<PartialBy<ICar, 'id'>, 'price'> & { price: number };
 
 export interface IPersistedCars extends ICar {
   status: 'add' | 'delete' | 'update';

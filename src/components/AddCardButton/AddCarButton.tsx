@@ -3,7 +3,7 @@ import { Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '../Modal';
 import FormDialog from '../Modal/FormDialog';
-import type { ICarForm } from '@/types/cars.types';
+import type { ICar } from '@/types/cars.types';
 import { useAppDispatch } from '@/hooks';
 import { addCar } from '@/redux/cars/cars.slice';
 
@@ -19,7 +19,7 @@ const AddCarButton = () => {
     setIsModalOpen(false);
   };
 
-  const successHandler = async (car: ICarForm) => {
+  const successHandler = async (car: ICar) => {
     dispatch(addCar(car));
   };
 

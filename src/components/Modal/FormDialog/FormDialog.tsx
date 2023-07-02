@@ -1,32 +1,19 @@
-import { Box, Button } from '@mui/material';
+import { Box, Button, InputAdornment } from '@mui/material';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormInput from './FormInput';
 import FormSwitch from './FormSwitch/FormSwitch';
-import type { ICarForm } from '@/types/cars.types';
+import type { ICar, ICarForm } from '@/types/cars.types';
 import { schema } from './FormDialog.schema';
 import { initialValues } from './FormDialog.initial';
+import { inputs } from './FormDialog.inputs';
 
 type Props = {
   type: 'edit' | 'create';
-  item?: ICarForm;
-  onSuccess?: (car: ICarForm) => void;
+  item?: ICar;
+  onSuccess?: (car: ICar) => void;
   onClose: () => void;
 };
-
-const inputs: {
-  name: keyof ICarForm;
-  label: string;
-  type: HTMLInputElement['type'];
-  canDisabled: boolean;
-}[] = [
-  { name: 'company', label: 'Company', type: 'text', canDisabled: true },
-  { name: 'model', label: 'Model', type: 'text', canDisabled: true },
-  { name: 'vin', label: 'VIN-code', type: 'text', canDisabled: true },
-  { name: 'year', label: 'Year', type: 'number', canDisabled: true },
-  { name: 'color', label: 'Color', type: 'text', canDisabled: false },
-  { name: 'price', label: 'Price', type: 'text', canDisabled: false },
-];
 
 const FormDialog = ({ type, item, onClose, onSuccess }: Props) => {
   const {
@@ -34,14 +21,12 @@ const FormDialog = ({ type, item, onClose, onSuccess }: Props) => {
     handleSubmit,
     formState: { errors },
   } = useForm<ICarForm>({
-    defaultValues: item || initialValues,
+    defaultValues: item ? { ...item, price: +item.price.replace(/[$]/g, '') } : initialValues,
     resolver: yupResolver(schema),
   });
 
-  const isEdit = type === 'edit';
-
   const submitHandler: SubmitHandler<ICarForm> = data => {
-    if (onSuccess) onSuccess(data);
+    if (onSuccess) onSuccess({ ...data, price: `$${data.price.toString()}` } as ICar);
 
     onClose();
   };
@@ -56,7 +41,7 @@ const FormDialog = ({ type, item, onClose, onSuccess }: Props) => {
       gap={2}
       onSubmit={handleSubmit(submitHandler)}
     >
-      {inputs.map(({ name, label, type, canDisabled }) => {
+      {inputs.map(({ name, label, type, canDisabled, startAdornment }) => {
         return (
           <Controller
             key={name}
@@ -66,7 +51,12 @@ const FormDialog = ({ type, item, onClose, onSuccess }: Props) => {
               <FormInput
                 label={label}
                 type={type}
-                disabled={canDisabled && isEdit}
+                disabled={canDisabled && type === 'edit'}
+                InputProps={{
+                  startAdornment: startAdornment && (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
                 {...field}
                 error={!!errors[name]}
                 helperText={errors[name]?.message}

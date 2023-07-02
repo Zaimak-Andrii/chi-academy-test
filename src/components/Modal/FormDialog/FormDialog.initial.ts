@@ -5,7 +5,7 @@ export const initialValues: ICarForm = {
   model: '',
   vin: '',
   color: '',
-  price: '',
+  price: 0,
   year: new Date().getFullYear(),
   availability: true,
 };
