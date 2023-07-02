@@ -1,13 +1,4 @@
-import {
-  Divider,
-  IconButton,
-  InputBase,
-  MenuItem,
-  Paper,
-  Select,
-  SelectChangeEvent,
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import { Divider, InputBase, MenuItem, Paper, Select, SelectChangeEvent } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { ICar } from '@/types/cars.types';
 import { useDebounce } from 'usehooks-ts';
@@ -65,10 +56,6 @@ const Search = ({ onChange }: Props) => {
         <MenuItem value="price">Price</MenuItem>
         <MenuItem value="availability">Availability</MenuItem>
       </Select>
-      {/* <Divider sx={{ height: 28, mx: 0.5 }} orientation="vertical" />
-       <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
-        <SearchIcon />
-      </IconButton> */}
     </Paper>
   );
 };
