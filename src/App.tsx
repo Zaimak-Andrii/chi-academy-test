@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Container } from '@mui/material';
 import { selectCars } from '@/redux/cars/cars.selectors';
 import { fetchCarsThunk } from '@/redux/cars/cars.thunk';
@@ -41,9 +41,9 @@ function App() {
     field: 'all',
   });
 
-  const changeSearch = (value: string, field: SearchType) => {
+  const changeSearch = useCallback((value: string, field: SearchType) => {
     setSearch({ value, field });
-  };
+  }, []);
 
   useEffect(() => {
     dispatch(fetchCarsThunk());

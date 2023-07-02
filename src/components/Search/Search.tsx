@@ -8,8 +8,9 @@ import {
   SelectChangeEvent,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ICar } from '@/types/cars.types';
+import { useDebounce } from 'usehooks-ts';
 
 type Props = {
   onChange: (value: string, field: SearchType) => void;
@@ -19,6 +20,7 @@ export type SearchType = keyof Omit<ICar, 'id'> | 'all';
 
 const Search = ({ onChange }: Props) => {
   const [value, setValue] = useState('');
+  const debouncedValue = useDebounce(value, 300);
   const [searchField, setSearchField] = useState<SearchType>('all');
 
   const changeInputHandler = (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -28,23 +30,19 @@ const Search = ({ onChange }: Props) => {
   const changeSelectHandler = (evt: SelectChangeEvent<SearchType>) => {
     const field = evt.target.value as SearchType;
     setSearchField(field);
-
-    onChange(value, field);
   };
 
-  const submitHandler = (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
-
-    onChange(value, searchField);
-  };
+  useEffect(() => {
+    onChange(debouncedValue, searchField);
+  }, [debouncedValue, onChange, searchField]);
 
   return (
     <Paper
       component="form"
       sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 600, mx: 'auto', mb: 3 }}
-      onSubmit={submitHandler}
     >
       <InputBase
+        name="searchValue"
         sx={{ ml: 1, flex: 1 }}
         value={value}
         onChange={changeInputHandler}
@@ -52,7 +50,12 @@ const Search = ({ onChange }: Props) => {
         inputProps={{ 'aria-label': 'search' }}
       />
       <Divider sx={{ height: 28, mx: 0.5 }} orientation="vertical" />
-      <Select value={searchField} onChange={changeSelectHandler} sx={{ width: 130 }}>
+      <Select
+        name="searchField"
+        value={searchField}
+        onChange={changeSelectHandler}
+        sx={{ width: 130 }}
+      >
         <MenuItem value="all">All</MenuItem>
         <MenuItem value="company">Company</MenuItem>
         <MenuItem value="model">Model</MenuItem>
@@ -62,10 +65,10 @@ const Search = ({ onChange }: Props) => {
         <MenuItem value="price">Price</MenuItem>
         <MenuItem value="availability">Availability</MenuItem>
       </Select>
-      <Divider sx={{ height: 28, mx: 0.5 }} orientation="vertical" />
-      <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
+      {/* <Divider sx={{ height: 28, mx: 0.5 }} orientation="vertical" />
+       <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
         <SearchIcon />
-      </IconButton>
+      </IconButton> */}
     </Paper>
   );
 };
