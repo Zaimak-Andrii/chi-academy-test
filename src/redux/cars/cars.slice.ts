@@ -1,40 +1,21 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import type { RequestStatus } from '@/constants';
-import { ICar } from '@/types/ICar';
+import type { ICar } from '@/types/cars.types';
 import { fetchCarsThunk } from './cars.thunk';
-
-type ChangedCarsType = ICar & { status: 'add' | 'delete' | 'update' };
-
-interface IInitialState {
-  list: ICar[];
-  persist: {
-    lastCarId: number;
-    changedCars: ChangedCarsType[];
-  };
-  status: RequestStatus;
-  error: string | null;
-}
-
-const initialState: IInitialState = {
-  list: [],
-  persist: {
-    lastCarId: 0,
-    changedCars: [],
-  },
-  status: 'idle',
-  error: null,
-};
+import { carsInitialState } from './cars.initial';
 
 export const carsSlice = createSlice({
   name: 'cars',
-  initialState,
+  initialState: carsInitialState,
   reducers: {
     addCar: (state, action: PayloadAction<Omit<ICar, 'id'>>) => {
+      // increase id
       state.persist.lastCarId += 1;
+
       const newCar = { id: state.persist.lastCarId, ...action.payload };
       state.list.unshift(newCar);
+
       // add new car to persist array
       state.persist.changedCars.push({ status: 'add', ...newCar });
     },
@@ -44,6 +25,7 @@ export const carsSlice = createSlice({
         state.list.findIndex(({ id }) => id === action.payload),
         1
       );
+
       // add removed car to persist array
       if (car) {
         const persistedCarIndex = state.persist.changedCars.findIndex(
@@ -51,10 +33,7 @@ export const carsSlice = createSlice({
         );
 
         if (persistedCarIndex >= 0) {
-          state.persist.changedCars[persistedCarIndex] = {
-            ...state.persist.changedCars[persistedCarIndex],
-            status: 'delete',
-          };
+          state.persist.changedCars[persistedCarIndex].status = 'delete';
         } else {
           state.persist.changedCars.push({
             status: 'delete',
@@ -68,6 +47,7 @@ export const carsSlice = createSlice({
       if (carIndex >= 0) {
         state.list.splice(carIndex, 1, action.payload);
       }
+
       // add removed car to persist array
       if (carIndex >= 0) {
         const persistedCarIndex = state.persist.changedCars.findIndex(
@@ -97,6 +77,8 @@ export const carsSlice = createSlice({
       .addCase(fetchCarsThunk.fulfilled, (state, { payload }) => {
         state.status = 'succeeded';
         state.list = payload;
+
+        // save last id value
         if (payload.length > state.persist.lastCarId) {
           state.persist.lastCarId = payload.length;
         }

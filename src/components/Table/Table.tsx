@@ -7,7 +7,7 @@ import {
   TableBody,
   TableFooter,
 } from '@mui/material';
-import { ICar } from '@/types/ICar';
+import { ICar } from '@/types/cars.types';
 import { useState } from 'react';
 import TableRow from './TableRow';
 import TablePagination from './TablePagination';

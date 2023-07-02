@@ -1,5 +1,5 @@
-import { FormControlLabel, Switch, SwitchProps } from '@mui/material';
 import { forwardRef } from 'react';
+import { FormControlLabel, Switch, SwitchProps } from '@mui/material';
 
 type Props = SwitchProps & {
   value: boolean;

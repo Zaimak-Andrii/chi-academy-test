@@ -1,37 +1,48 @@
 import { Box, Button } from '@mui/material';
-import { ICar } from '@/types/ICar';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import FormInput from './FormInput';
 import FormSwitch from './FormSwitch/FormSwitch';
+import type { ICarForm } from '@/types/cars.types';
+import { schema } from './FormDialog.schema';
+import { initialValues } from './FormDialog.initial';
 
-type FormValuesType = Omit<ICar, 'id'>;
 type Props = {
   type: 'edit' | 'create';
-  item?: FormValuesType;
-  onSuccess?: (car: FormValuesType) => void;
+  item?: ICarForm;
+  onSuccess?: (car: ICarForm) => void;
   onClose: () => void;
 };
 
-const initialValues: FormValuesType = {
-  company: '',
-  model: '',
-  vin: '',
-  color: '',
-  price: '',
-  year: new Date().getFullYear(),
-  availability: true,
-};
+const inputs: {
+  name: keyof ICarForm;
+  label: string;
+  type: HTMLInputElement['type'];
+  canDisabled: boolean;
+}[] = [
+  { name: 'company', label: 'Company', type: 'text', canDisabled: true },
+  { name: 'model', label: 'Model', type: 'text', canDisabled: true },
+  { name: 'vin', label: 'VIN-code', type: 'text', canDisabled: true },
+  { name: 'year', label: 'Year', type: 'number', canDisabled: true },
+  { name: 'color', label: 'Color', type: 'text', canDisabled: false },
+  { name: 'price', label: 'Price', type: 'text', canDisabled: false },
+];
 
 const FormDialog = ({ type, item, onClose, onSuccess }: Props) => {
-  const { control, handleSubmit } = useForm<FormValuesType>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ICarForm>({
     defaultValues: item || initialValues,
+    resolver: yupResolver(schema),
   });
 
   const isEdit = type === 'edit';
 
-  const submitHandler: SubmitHandler<FormValuesType> = data => {
-    console.log(data);
+  const submitHandler: SubmitHandler<ICarForm> = data => {
     if (onSuccess) onSuccess(data);
+
     onClose();
   };
 
@@ -45,43 +56,25 @@ const FormDialog = ({ type, item, onClose, onSuccess }: Props) => {
       gap={2}
       onSubmit={handleSubmit(submitHandler)}
     >
-      <Controller
-        name="company"
-        control={control}
-        render={({ field }) => <FormInput label="Company" disabled={isEdit} {...field} />}
-      />
-
-      <Controller
-        name="model"
-        control={control}
-        render={({ field }) => <FormInput label="Model" disabled={isEdit} {...field} />}
-      />
-
-      <Controller
-        name="vin"
-        control={control}
-        render={({ field }) => <FormInput label="VIN-code" disabled={isEdit} {...field} />}
-      />
-
-      <Controller
-        name="year"
-        control={control}
-        render={({ field }) => (
-          <FormInput type="number" label="Year" disabled={isEdit} {...field} />
-        )}
-      />
-
-      <Controller
-        name="color"
-        control={control}
-        render={({ field }) => <FormInput label="Color" {...field} />}
-      />
-
-      <Controller
-        name="price"
-        control={control}
-        render={({ field }) => <FormInput label="Price" {...field} />}
-      />
+      {inputs.map(({ name, label, type, canDisabled }) => {
+        return (
+          <Controller
+            key={name}
+            name={name}
+            control={control}
+            render={({ field }) => (
+              <FormInput
+                label={label}
+                type={type}
+                disabled={canDisabled && isEdit}
+                {...field}
+                error={!!errors[name]}
+                helperText={errors[name]?.message}
+              />
+            )}
+          />
+        );
+      })}
 
       <Controller
         name="availability"

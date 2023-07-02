@@ -1,8 +1,8 @@
-import { convertCarObject } from '@/helpers';
-import { getCarsService } from '@/services/api';
-import { ICar } from '@/types/ICar';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { getCarsService } from '@/services/api';
 import { RootState } from '../store';
+import { applyPersistedData, convertCarObject } from '@/helpers';
+import type { ICar } from '@/types/cars.types';
 
 export const fetchCarsThunk = createAsyncThunk<ICar[], undefined, { rejectValue: string }>(
   'cars/fetchCars',
@@ -12,28 +12,7 @@ export const fetchCarsThunk = createAsyncThunk<ICar[], undefined, { rejectValue:
       const cars = data.map(car => convertCarObject(car));
       const persistedCars = (getState() as RootState).cars.persist.changedCars;
 
-      const newCarsFromPersist = () =>
-        persistedCars
-          .filter(({ id, status }) => id > cars.length && status !== 'delete')
-          .map(({ status: _, ...otherCarProprty }) => ({ ...otherCarProprty }));
-
-      return cars.reduce<ICar[]>((acc, car) => {
-        const findCar = persistedCars.find(({ id }) => id === car.id);
-
-        if (findCar) {
-          const { status, ...otherCarProperty } = findCar;
-
-          if (status === 'update') {
-            acc.push({ ...car, ...otherCarProperty });
-          } else if (status === 'delete') {
-            return acc;
-          }
-        } else {
-          acc.push(car);
-        }
-
-        return acc;
-      }, newCarsFromPersist());
+      return applyPersistedData(cars, persistedCars);
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }

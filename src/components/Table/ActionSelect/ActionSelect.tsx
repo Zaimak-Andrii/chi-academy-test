@@ -3,7 +3,7 @@ import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import Modal from '@/components/Modal';
 import DeleteDialog from '@/components/Modal/DeleteDialog';
 import FormDialog from '@/components/Modal/FormDialog';
-import { ICar } from '@/types/ICar';
+import { ICar } from '@/types/cars.types';
 import { useAppDispatch } from '@/hooks';
 import { updateCar } from '@/redux/cars/cars.slice';
 

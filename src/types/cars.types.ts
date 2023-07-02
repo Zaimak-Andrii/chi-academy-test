@@ -19,3 +19,9 @@ export interface ICar {
   price: string;
   availability: boolean;
 }
+
+export type ICarForm = Omit<ICar, 'id'>;
+
+export interface IPersistedCars extends ICar {
+  status: 'add' | 'delete' | 'update';
+}

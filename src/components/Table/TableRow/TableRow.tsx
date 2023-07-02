@@ -1,5 +1,5 @@
 import { TableRow as MaterialTableRow, TableCell, TableRowProps } from '@mui/material';
-import { ICar } from '@/types/ICar';
+import { ICar } from '@/types/cars.types';
 import { EAvailability } from '@/types/AvailabilityEnum';
 import ActionSelect from '../ActionSelect';
 

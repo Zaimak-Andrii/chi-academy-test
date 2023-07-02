@@ -1,4 +1,4 @@
-import { ICarApi } from '@/types/ICar';
+import { ICarApi } from '@/types/cars.types';
 import axios from 'axios';
 
 const api = axios.create({

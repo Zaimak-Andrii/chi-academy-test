@@ -1,9 +1,9 @@
-import { Container } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/hooks';
+import { Container } from '@mui/material';
 import { selectCars } from '@/redux/cars/cars.selectors';
 import { fetchCarsThunk } from '@/redux/cars/cars.thunk';
-import { ICar } from '@/types/ICar';
+import { useAppDispatch, useAppSelector } from '@/hooks';
+import type { ICar } from '@/types/cars.types';
 import AppTable from '@/components/Table';
 import Search from '@/components/Search';
 import AddCarButton from '@/components/AddCardButton';

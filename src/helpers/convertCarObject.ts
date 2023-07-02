@@ -1,6 +1,13 @@
-import { ICar, ICarApi } from '@/types/ICar';
+import { ICar, ICarApi } from '@/types/cars.types';
 
-export const convertCarObject = ({ car, car_color, car_model, car_model_year, car_vin, ...other }: ICarApi): ICar => ({
+export const convertCarObject = ({
+  car,
+  car_color,
+  car_model,
+  car_model_year,
+  car_vin,
+  ...other
+}: ICarApi): ICar => ({
   company: car,
   color: car_color,
   model: car_model,
