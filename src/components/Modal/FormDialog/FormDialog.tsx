@@ -25,6 +25,8 @@ const FormDialog = ({ type, item, onClose, onSuccess }: Props) => {
     resolver: yupResolver(schema),
   });
 
+  const isEdit = type === 'edit';
+
   const submitHandler: SubmitHandler<ICarForm> = data => {
     if (onSuccess) onSuccess({ ...data, price: `$${data.price.toString()}` } as ICar);
 
@@ -51,7 +53,7 @@ const FormDialog = ({ type, item, onClose, onSuccess }: Props) => {
               <FormInput
                 label={label}
                 type={type}
-                disabled={canDisabled && type === 'edit'}
+                disabled={canDisabled && isEdit}
                 InputProps={{
                   startAdornment: startAdornment && (
                     <InputAdornment position="start">$</InputAdornment>
