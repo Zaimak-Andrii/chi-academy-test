@@ -32,6 +32,7 @@ const FormDialog = ({ type, item, onClose, onSuccess }: Props) => {
   const submitHandler: SubmitHandler<FormValuesType> = data => {
     console.log(data);
     if (onSuccess) onSuccess(data);
+    onClose();
   };
 
   return (
