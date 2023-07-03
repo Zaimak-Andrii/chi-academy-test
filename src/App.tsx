@@ -9,27 +9,24 @@ import Search from '@/components/Search';
 import AddCarButton from '@/components/AddCardButton';
 import { SearchType } from './components/Search/Search';
 
+function isInclude(value: string | number | boolean, searchStr: string): boolean {
+  const str = typeof value === 'boolean' ? (value ? 'yes' : 'no') : value.toString();
+
+  return str.toLowerCase().includes(searchStr);
+}
+
 function filterIt(arr: ICar[], searchValue: string, searchField: SearchType) {
   if (searchValue.length === 0) return arr;
+  const normalizeSearchValue = searchValue.toLocaleLowerCase();
 
+  // searching by category
   if (searchField !== 'all') {
-    return arr.filter(car => {
-      const str =
-        typeof car[searchField] === 'boolean'
-          ? car[searchField]
-            ? 'yes'
-            : 'no'
-          : car[searchField];
-      return str.toString().toLocaleLowerCase().includes(searchValue.toLocaleLowerCase());
-    });
+    return arr.filter(car => isInclude(car[searchField], normalizeSearchValue));
   }
 
+  // search by all fields
   return arr.filter(({ id: _, ...carOther }) => {
-    return Object.values(carOther).some(value => {
-      const str = typeof value === 'boolean' ? (value ? 'yes' : 'no') : value;
-
-      return str.toString().toLowerCase().includes(searchValue.toLocaleLowerCase());
-    });
+    return Object.values(carOther).some(value => isInclude(value, normalizeSearchValue));
   });
 }
 
